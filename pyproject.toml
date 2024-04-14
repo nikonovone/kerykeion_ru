@@ -1,6 +1,14 @@
 [tool.setuptools]
 py-modules = []
 
+[project]
+name = 'kerykeion_ru'
+requires-python = ">=3.10"
+version = "1.0.0"
+authors = [
+    {name = "Nikonov Nikita", email = "nikonov.nikita@hotmail.com"},
+]
+
 [tool.poetry]
 name = "kerykeion"
 version = "4.4.2"
