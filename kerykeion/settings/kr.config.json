@@ -41,6 +41,47 @@
         "Chiron": "Chiron"
       }
     },
+    "RU": {
+      "info": "Информация",
+      "cusp": "Фаза перехода",
+      "longitude": "Долгота",
+      "latitude": "Широта",
+      "north": "Север",
+      "east": "Восток",
+      "south": "Юг",
+      "west": "Запад",
+      "fire": "Огонь",
+      "earth": "Земля",
+      "air": "Воздух",
+      "water": "Вода",
+      "and_word": "и",
+      "transits": "Переход",
+      "type": "тип",
+      "aspects": "аспект",
+      "planets_and_house": "Планеты и дома",
+      "transit_name": "Время перехода",
+      "lunar_phase": "Фаза Луны",
+      "day": "день",
+      "celestial_points": {
+        "Sun": "Солнце",
+        "Moon": "Луна",
+        "Mercury": "Меркурий",
+        "Venus": "Венера",
+        "Mars": "Марс",
+        "Jupiter": "Юпитер",
+        "Saturn": "Сатурн",
+        "Uranus": "Уран",
+        "Neptune": "Нептун",
+        "Pluto": "Плутон",
+        "Asc": "Асцендент",
+        "Mc": "Середина Неба",
+        "Dsc": "Десцендент",
+        "Ic": "Имум Коэли",
+        "True_Node": "Истинные узлы Луны",
+        "Mean_Node": "Средние узлы Луна",
+        "Chiron": "Хирон"
+      }
+    },
     "FR": {
       "info": "Informations",
       "cusp": "Maison",
@@ -325,7 +366,9 @@
       "color": "#984b00",
       "is_active": true,
       "element_points": 40,
-      "related_zodiac_signs": ["4"],
+      "related_zodiac_signs": [
+        "4"
+      ],
       "label": "Sun"
     },
     {
@@ -334,7 +377,9 @@
       "color": "#150052",
       "is_active": true,
       "element_points": 40,
-      "related_zodiac_signs": ["3"],
+      "related_zodiac_signs": [
+        "3"
+      ],
       "label": "Moon"
     },
     {
@@ -343,7 +388,10 @@
       "color": "#520800",
       "is_active": true,
       "element_points": 15,
-      "related_zodiac_signs": ["2", "5"],
+      "related_zodiac_signs": [
+        "2",
+        "5"
+      ],
       "label": "Mercury"
     },
     {
@@ -352,7 +400,10 @@
       "color": "#400052",
       "is_active": true,
       "element_points": 15,
-      "related_zodiac_signs": ["1", "6"],
+      "related_zodiac_signs": [
+        "1",
+        "6"
+      ],
       "label": "Venus"
     },
     {
@@ -361,7 +412,9 @@
       "color": "#540000",
       "is_active": true,
       "element_points": 15,
-      "related_zodiac_signs": ["0"],
+      "related_zodiac_signs": [
+        "0"
+      ],
       "label": "Mars"
     },
     {
@@ -370,7 +423,9 @@
       "color": "#47133d",
       "is_active": true,
       "element_points": 10,
-      "related_zodiac_signs": ["8"],
+      "related_zodiac_signs": [
+        "8"
+      ],
       "label": "Jupiter"
     },
     {
@@ -379,7 +434,9 @@
       "color": "#124500",
       "is_active": true,
       "element_points": 10,
-      "related_zodiac_signs": ["9"],
+      "related_zodiac_signs": [
+        "9"
+      ],
       "label": "Saturn"
     },
     {
@@ -388,7 +445,9 @@
       "color": "#6f0766",
       "is_active": true,
       "element_points": 10,
-      "related_zodiac_signs": ["10"],
+      "related_zodiac_signs": [
+        "10"
+      ],
       "label": "Uranus"
     },
     {
@@ -397,7 +456,9 @@
       "color": "#06537f",
       "is_active": true,
       "element_points": 10,
-      "related_zodiac_signs": ["11"],
+      "related_zodiac_signs": [
+        "11"
+      ],
       "label": "Neptune"
     },
     {
@@ -406,7 +467,9 @@
       "color": "#713f04",
       "is_active": true,
       "element_points": 10,
-      "related_zodiac_signs": ["7"],
+      "related_zodiac_signs": [
+        "7"
+      ],
       "label": "Pluto"
     },
     {
@@ -516,10 +579,10 @@
   "general_settings": {
     "axes_orbit": 1,
     "planet_in_zodiac_extra_points": 10,
-    "language": "EN"
+    "language": "RU"
   },
   "chart_settings": {
-    "basic_chart_viewBox": "0 0 772.2 546.0",
-    "wide_chart_viewBox": "0 0 1060 546.0"
+    "basic_chart_viewBox": "0 0 1920 1080",
+    "wide_chart_viewBox": "0 0 1920 1080"
   }
 }

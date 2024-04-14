@@ -79,7 +79,7 @@ class FetchGeonames:
 
         params = {
             "q": city_name,
-            "contry": country_code,
+            "country": country_code,
             "username": self.username,
             "maxRows": 1,
             "style": "FULL",
