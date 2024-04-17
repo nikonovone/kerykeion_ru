@@ -2,7 +2,7 @@
 py-modules = []
 
 [project]
-name = 'kerykeion_ru'
+name = 'kerykeionru'
 requires-python = ">=3.10"
 version = "1.0.0"
 authors = [
