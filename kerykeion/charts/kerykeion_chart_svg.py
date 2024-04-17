@@ -1692,7 +1692,7 @@ class KerykeionChartSVG:
         self._createTemplateDictionary()
         return template.replace('"', "'")
 
-    def makeSVG(self) -> None:
+    def makeSVG(self, save = False) -> None:
         """Prints out the SVG file in the specifide folder"""
 
         if not (self.template):
@@ -1701,14 +1701,15 @@ class KerykeionChartSVG:
         self.chartname = (
             self.output_directory / f"{self.name}{self.chart_type}Chart.svg"
         )
+        if save:
+            with open(
+                self.chartname, "w", encoding="utf-8", errors="ignore"
+            ) as output_file:
+                output_file.write(self.template)
 
-        with open(
-            self.chartname, "w", encoding="utf-8", errors="ignore"
-        ) as output_file:
-            output_file.write(self.template)
-
-        logging.info(f"SVG Generated Correctly in: {self.chartname}")
-
+            logging.info(f"SVG Generated Correctly in: {self.chartname}")
+        else:
+            return self.template
 
 if __name__ == "__main__":
     from kerykeion.utilities import setup_logging
