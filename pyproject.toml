@@ -1,5 +1,5 @@
 [tool.setuptools]
-py-modules = []
+packages = ["kerykeion"]
 
 [project]
 name = 'kerykeion'
