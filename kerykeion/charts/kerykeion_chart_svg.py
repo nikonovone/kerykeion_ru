@@ -49,7 +49,7 @@ class KerykeionChartSVG:
     def __init__(
         self,
         first_obj: AstrologicalSubject,
-        chart_type: ChartType = "Natal",
+        chart_type: ChartType = "ExternalNatal",
         second_obj: Union[AstrologicalSubject, None] = None,
         new_output_directory: Union[str, None] = None,
         new_settings_file: Union[Path, None] = None,
@@ -65,10 +65,6 @@ class KerykeionChartSVG:
             self.output_directory = self.homedir
 
         self.xml_svg = DATA_DIR / "templates/chart.xml"
-
-        # SVG Width
-        self.natal_width = 1000
-        self.full_width = 1920
 
         self.parse_json_settings(new_settings_file)
         self.chart_type = chart_type
@@ -156,10 +152,10 @@ class KerykeionChartSVG:
 
         # screen size
         if self.chart_type == "Natal":
-            self.screen_width = 1920
+            self.screen_width = self.chart_settings["width"]
         else:
-            self.screen_width = 1920
-        self.screen_height = 1080
+            self.screen_width = self.chart_settings["width"]
+        self.screen_height = self.chart_settings["height"]
 
         # check for home
         self.home_location = self.user.city
@@ -268,7 +264,7 @@ class KerykeionChartSVG:
         """
         radius_offset = 18
 
-        out = f'<circle cx="{r}" cy="{r}" r="{r - radius_offset}" style="fill: none; stroke: {self.chart_colors_settings["paper_1"]}; stroke-width: 36px; stroke-opacity: .4;"/>'
+        out = f'<circle cx="{r}" cy="{r}" r="{r - radius_offset}" style="fill: none; stroke: {self.chart_colors_settings["base_color_font"]}; stroke-width: 36px; stroke-opacity: 1;"/>'
         out += f'<circle cx="{r}" cy="{r}" r="{r}" style="fill: none; stroke: {self.chart_colors_settings["zodiac_transit_ring_3"]}; stroke-width: 1px; stroke-opacity: .6;"/>'
 
         return out
@@ -284,12 +280,12 @@ class KerykeionChartSVG:
                 offset = offset + 360.0
             elif offset > 360:
                 offset = offset - 360.0
-            x1 = sliceToX(0, r - self.c1, offset) + self.c1
-            y1 = sliceToY(0, r - self.c1, offset) + self.c1
-            x2 = sliceToX(0, r + 2 - self.c1, offset) - 2 + self.c1
-            y2 = sliceToY(0, r + 2 - self.c1, offset) - 2 + self.c1
-
-            out += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" style="stroke: {self.chart_colors_settings["paper_0"]}; stroke-width: 1px; stroke-opacity:.9;"/>'
+            k = r-r*self.c0
+            x1 = sliceToX(0,r-k, offset) + k
+            y1 = sliceToY(0, r-k, offset) + k
+            x2 = sliceToX(0, 2+r-k, offset) -2 + k
+            y2 = sliceToY(0, 2+r-k, offset) -2 + k
+            out += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" style="stroke: {self.chart_colors_settings["base_color_font"]}; stroke-width: 2px;"/>'
 
         return out
 
@@ -372,6 +368,7 @@ class KerykeionChartSVG:
             raise KerykeionException(f"Wrong type: {type}, it must be 1, 2 or 3.")
         return str(out)
 
+    # Связи в круге
     def _drawAspect(self, r, ar, degA, degB, color):
         """
         Draws svg aspects: ring, aspect ring, degreeA degreeB
@@ -382,7 +379,8 @@ class KerykeionChartSVG:
         offset = (int(self.user.houses_degree_ut[6]) / -1) + int(degB)
         x2 = sliceToX(0, ar, offset) + (r - ar)
         y2 = sliceToY(0, ar, offset) + (r - ar)
-        out = f'            <line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" style="stroke: {color}; stroke-width: 1; stroke-opacity: .9;"/>'
+
+        out = f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" style="stroke: {color}; stroke-width: 1; stroke-opacity: .5;"/>'
 
         return out
 
@@ -393,18 +391,21 @@ class KerykeionChartSVG:
         if self.chart_type == "Transit" or self.chart_type == "Synastry":
             dropin = 0
         else:
-            dropin = self.c1
+            # Размер цветного круга
+            dropin = r-r*self.c1
+
         slice = f'<path d="M{str(r)},{str(r)} L{str(dropin + sliceToX(num, r - dropin, offset))},{str(dropin + sliceToY(num, r - dropin, offset))} A{str(r - dropin)},{str(r - dropin)} 0 0,0 {str(dropin + sliceToX(num + 1, r - dropin, offset))},{str(dropin + sliceToY(num + 1, r - dropin, offset))} z" style="{style}"/>'
 
         # symbols
-        offset = offset + 15
+        offset = offset + self.width*0.008
         # check transit
         if self.chart_type == "Transit" or self.chart_type == "Synastry":
             dropin = 54
         else:
-            dropin = 18 + self.c1
-        sign = f'<g transform="translate(-16,-16)"><use x="{str(dropin + sliceToX(num, r - dropin, offset))}" y="{str(dropin + sliceToY(num, r - dropin, offset))}" xlink:href="#{type}" /></g>'
-
+            dropin = r - r*self.c1*0.85
+        sign = f'<g transform="translate(-{self.width*0.008}, -{self.height*0.01})">'
+        sign += f'<g><use x="{str(dropin + sliceToX(num, r - dropin, offset))}" y="{str(dropin + sliceToY(num, r - dropin, offset))}" xlink:href="#{type}" /></g>'
+        sign += "</g>"
         return slice + "" + sign
 
     def _makeZodiac(self, r):
@@ -418,6 +419,43 @@ class KerykeionChartSVG:
             )
         return output
 
+    def _makeInfo(self):
+        li = self.height*0.04
+        offset = self.width*0.003
+
+        # out = f'<g transform="translate({self.width*0.15}, {self.height*0.06})">'
+        # out += '<g transform="translate(0, 0)">'
+        # out += f'<text text-anchor="end"  style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: {3*self.header_font_size}px;">{self.td["stringTitle"]}</text>'
+        # out += "</g>"
+
+        out = f'<g transform="translate({self.width*0.05}, {self.height*0.105})">'
+        out += f'<text text-anchor="start" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: {3*self.header_font_size}px;">{self.td["stringTitle"]}</text>'
+
+        data= [
+            self.td["stringName"],
+            self.td["stringLocation"],
+            self.td["stringDateTime"],
+            self.td["stringLat"],
+            self.td["stringLon"],
+            self.td["bottomLeft1"],
+            self.td["bottomLeft2"],
+            self.td["bottomLeft3"],
+            self.td["bottomLeft4"],
+        ]
+
+        for i in range(len(data)):
+            offset_between_lines = self.height*0.025
+            # start of line
+            out += f'<g transform="translate({offset},{li+self.height*0.02})">'
+            # out += f'<g transform="translate(0,{li+self.height*0.02})">'
+            out += f'<text text-anchor="start" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: {self.base_font_size}px;">{data[i]}</text>'
+            # end of line
+            out += "</g>"
+
+            li = li + offset_between_lines
+
+        out += "</g>"
+        return out
     def _makeHouses(self, r):
         path = ""
 
@@ -429,9 +467,8 @@ class KerykeionChartSVG:
                 roff = 72
                 t_roff = 36
             else:
-                dropin = self.c3
-                roff = self.c1
-
+                dropin = r - self.c0*r
+                roff = r - self.c2*r
             # offset is negative desc houses_degree_ut[6]
             offset = (int(self.user.houses_degree_ut[int(xr / 2)]) / -1) + int(
                 self.user.houses_degree_ut[i]
@@ -536,20 +573,20 @@ class KerykeionChartSVG:
             if self.chart_type == "Transit" or self.chart_type == "Synastry":
                 dropin = 84
             elif self.chart_type == "ExternalNatal":
-                dropin = 100
+                dropin = r - r*self.c0*0.95
             # Natal
             else:
-                dropin = 48
+                dropin = r - r*self.c0
 
             xtext = sliceToX(0, (r - dropin), text_offset) + dropin  # was 132
             ytext = sliceToY(0, (r - dropin), text_offset) + dropin  # was 132
-            path = f'{path}<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" style="stroke: {linecolor}; stroke-width: 2px; stroke-dasharray:3,2; stroke-opacity:.4;"/>'
+            path = f'{path}<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" style="stroke: {self.chart_colors_settings["base_color_font"]}; stroke-width: 2px; stroke-dasharray:3,2; stroke-opacity:.4;"/>'
             path = (
                 path
-                + '<text style="fill: #f00; fill-opacity: .6; font-size: 14px"><tspan x="'
+                + f'<text style="fill:{self.chart_colors_settings["base_color_font"]}; fill-opacity: 1; font-size: {self.base_font_size}px"><tspan x="'
                 + str(xtext - 3)
                 + '" y="'
-                + str(ytext + 3)
+                + str(ytext + 5)
                 + '">'
                 + str(i + 1)
                 + "</tspan></text>"
@@ -781,17 +818,17 @@ class KerykeionChartSVG:
                 # put on special line (rplanet is range from outer ring)
                 amin, bmin, cmin = 0, 0, 0
                 if self.chart_type == "ExternalNatal":
-                    amin = 74 - 10
-                    bmin = 94 - 10
-                    cmin = 40 - 10
+                    amin = self.width*0.1 + self.width*0.03
+                    bmin = self.width*0.1 + self.width*0.03
+                    cmin = self.width*0.1 + self.width*0.03
 
                 if 22 < i < 27:
-                    rplanet = 40 - cmin
+                    rplanet = self.width*0.1 - cmin
                 elif switch == 1:
-                    rplanet = 74 - amin
+                    rplanet = self.width*0.1 - amin
                     switch = 0
                 else:
-                    rplanet = 94 - bmin
+                    rplanet = self.width*0.1 - bmin
                     switch = 1
 
             rtext = 45
@@ -809,31 +846,31 @@ class KerykeionChartSVG:
                 scale = 0.8
 
             elif self.chart_type == "ExternalNatal":
-                scale = 0.8
-                # line1
-                x1 = sliceToX(0, (r - self.c3), trueoffset) + self.c3
-                y1 = sliceToY(0, (r - self.c3), trueoffset) + self.c3
-                x2 = sliceToX(0, (r - rplanet - 30), trueoffset) + rplanet + 30
-                y2 = sliceToY(0, (r - rplanet - 30), trueoffset) + rplanet + 30
+                scale = 0.9
+                # # line1
+                x1 = sliceToX(0, (r-r*self.c3*0.93), trueoffset) + r*self.c3*0.93
+                y1 = sliceToY(0, (r-r*self.c3*0.93), trueoffset) + r*self.c3*0.93
+                x2 = sliceToX(0, (r - rplanet - self.width*0.022), trueoffset) + rplanet + self.width*0.022
+                y2 = sliceToY(0, (r - rplanet - self.width*0.022), trueoffset) + rplanet + self.width*0.022
                 color = self.available_planets_setting[i]["color"]
                 output += (
-                    '<line x1="%s" y1="%s" x2="%s" y2="%s" style="stroke-width:1px;stroke:%s;stroke-opacity:.3;"/>\n'
+                    '<line x1="%s" y1="%s" x2="%s" y2="%s" style="stroke-width:1px;stroke:%s;stroke-opacity:1;"/>\n'
                     % (x1, y1, x2, y2, color)
                 )
                 # line2
-                x1 = sliceToX(0, (r - rplanet - 30), trueoffset) + rplanet + 30
-                y1 = sliceToY(0, (r - rplanet - 30), trueoffset) + rplanet + 30
-                x2 = sliceToX(0, (r - rplanet - 10), offset) + rplanet + 10
-                y2 = sliceToY(0, (r - rplanet - 10), offset) + rplanet + 10
+                x1 = sliceToX(0, (r - rplanet - self.width*0.022), trueoffset) + rplanet + self.width*0.022
+                y1 = sliceToY(0, (r - rplanet - self.width*0.022), trueoffset) + rplanet + self.width*0.022
+                x2 = sliceToX(0, (r - rplanet - self.width*0.022//1.6), offset) + rplanet + self.width*0.022//1.6
+                y2 = sliceToY(0, (r - rplanet - self.width*0.022//1.6), offset) + rplanet + self.width*0.022//1.6
                 output += (
-                    '<line x1="%s" y1="%s" x2="%s" y2="%s" style="stroke-width:1px;stroke:%s;stroke-opacity:.5;"/>\n'
+                    '<line x1="%s" y1="%s" x2="%s" y2="%s" style="stroke-width:1px;stroke:%s;stroke-opacity:1;"/>\n'
                     % (x1, y1, x2, y2, color)
                 )
 
             else:
                 scale = 1
             # output planet
-            output += f'<g transform="translate(-{12 * scale},-{12 * scale})"><g transform="scale({scale})"><use x="{planet_x * (1/scale)}" y="{planet_y * (1/scale)}" xlink:href="#{self.available_planets_setting[i]["name"]}" /></g></g>'
+            output += f'<g transform="translate(-{self.width*0.004 * scale},{self.width*0.001 * scale})"><g transform="scale({scale})"><use x="{planet_x * (1/scale)}" y="{planet_y * (1/scale)}" xlink:href="#{self.available_planets_setting[i]["name"]}" /></g></g>'
 
         # make transit degut and display planets
         if self.chart_type == "Transit" or self.chart_type == "Synastry":
@@ -1143,7 +1180,7 @@ class KerykeionChartSVG:
         if len(yot) >= 1:
             y = 0
             for k, v in yot.items():
-                out += f'<text y="{y}" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 12px;">{"Yot"}</text>'
+                out += f'<text y="{y}" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: 12px;">{"Yot"}</text>'
 
                 # first planet symbol
                 out += f'<g transform="translate(20,{y})">'
@@ -1177,23 +1214,24 @@ class KerykeionChartSVG:
 
         return out
 
+    # Сетка справа внизу
     def _makeAspectGrid(self, r):
         out = ""
         style = (
-            "stroke:%s; stroke-width: 1px; stroke-opacity:.6; fill:none"
-            % (self.chart_colors_settings["paper_0"])
-        )
-        xindent = 500
-        yindent = 468
-        box = 14
+            f"stroke:{self.chart_colors_settings["base_color_font"]}; stroke-width: {self.width*0.001}px; stroke-opacity:1; fill:none")
+
+        xindent = self.width * 0.71
+        yindent = self.height * 0.85
+        box = self.width * 0.015
         revr = list(range(len(self.available_planets_setting)))
         revr.reverse()
         counter = 0
         for a in revr:
             counter += 1
             if self.available_planets_setting[a]["is_active"] == 1:
+                scale_f = 0.8
+                out += f'<use transform="scale({scale_f})" x="{(xindent+self.width*0.003)*1/scale_f}" y="{(yindent+self.width*0.002)*1/scale_f}" xlink:href="#{self.available_planets_setting[a]["name"]}" />'
                 out += f'<rect x="{xindent}" y="{yindent}" width="{box}" height="{box}" style="{style}"/>'
-                out += f'<use transform="scale(0.4)" x="{(xindent+2)*2.5}" y="{(yindent+1)*2.5}" xlink:href="#{self.available_planets_setting[a]["name"]}" />'
 
                 xindent = xindent + box
                 yindent = yindent - box
@@ -1206,11 +1244,12 @@ class KerykeionChartSVG:
                         out += f'<rect x="{xorb}" y="{yorb}" width="{box}" height="{box}" style="{style}"/>'
 
                         xorb = xorb + box
+                        scale_f = 1.6
                         for element in self.aspects_list:
                             if (element["p1"] == a and element["p2"] == b) or (
                                 element["p1"] == b and element["p2"] == a
                             ):
-                                out += f'<use  x="{xorb-box+1}" y="{yorb+1}" xlink:href="#orb{element["aspect_degrees"]}" />'
+                                out += f'<use transform="scale({scale_f})" x="{(xorb-box+1)/scale_f+1.5}" y="{(yorb+1)/scale_f+1.5}" xlink:href="#orb{element["aspect_degrees"]}" />'
 
         return out
 
@@ -1235,7 +1274,7 @@ class KerykeionChartSVG:
 
     def _makeAspectTransitGrid(self, r):
         out = '<g transform="translate(500,310)">'
-        out += f'<text y="-15" x="0" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 14px;">{self.language_settings["aspects"]}:</text>'
+        out += f'<text y="-15" x="0" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: 14px;">{self.language_settings["aspects"]}:</text>'
 
         line = 0
         nl = 0
@@ -1282,41 +1321,49 @@ class KerykeionChartSVG:
 
             out += "</g>"
             # difference in degrees
-            out += f'<text y="8" x="45" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 10px;">{self._dec2deg(self.aspects_list[i]["orbit"])}</text>'
+            out += f'<text y="8" x="45" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: 10px;">{self._dec2deg(self.aspects_list[i]["orbit"])}</text>'
             # line
             out += "</g>"
             line = line + 14
         out += "</g>"
         return out
 
+    # Земля, воздух, вода, огонь
     def _makeElements(self, r):
         total = self.fire + self.earth + self.air + self.water
         pf = int(round(100 * self.fire / total))
         pe = int(round(100 * self.earth / total))
         pa = int(round(100 * self.air / total))
         pw = int(round(100 * self.water / total))
+        y_c = self.height*0.08
 
-        out = '<g transform="translate(-30,79)">'
-        out += f'<text y="0" style="fill:#ff6600; font-size: 10px;">{self.language_settings["fire"]}  {str(pf)}%</text>'
-        out += f'<text y="12" style="fill:#6a2d04; font-size: 10px;">{self.language_settings["earth"]} {str(pe)}%</text>'
-        out += f'<text y="24" style="fill:#6f76d1; font-size: 10px;">{self.language_settings["air"]}   {str(pa)}%</text>'
-        out += f'<text y="36" style="fill:#630e73; font-size: 10px;">{self.language_settings["water"]} {str(pw)}%</text>'
+        out = f'<g transform="translate({self.width*0.03},{self.height*0.4})">'
+        out += f'<text text-anchor="start" y="{self.height*0.0 + y_c*0}" style="fill:#ff6600; font-size: {self.base_font_size}px;">{self.language_settings["fire"]} </text>'
+        out += f'<text text-anchor="start" y="{self.height*0.0 + y_c*1}" style="fill:#ffd166; font-size: {self.base_font_size}px;">{self.language_settings["earth"]}</text>'
+        out += f'<text text-anchor="start" y="{self.height*0.0 + y_c*2}" style="fill:#06d6a0; font-size: {self.base_font_size}px;">{self.language_settings["air"]}  </text>'
+        out += f'<text text-anchor="start" y="{self.height*0.0 + y_c*3}" style="fill:#118ab2; font-size: {self.base_font_size}px;">{self.language_settings["water"]}</text>'
+        out += f'<text text-anchor="start" x="{self.width*0.04}" y="{self.height*0.0 + y_c*0}" style="fill:#ff6600; font-size: {self.base_font_size}px;">{str(pf)}%</text>'
+        out += f'<text text-anchor="start" x="{self.width*0.04}" y="{self.height*0.0 + y_c*1}" style="fill:#ffd166; font-size: {self.base_font_size}px;">{str(pe)}%</text>'
+        out += f'<text text-anchor="start" x="{self.width*0.04}" y="{self.height*0.0 + y_c*2}" style="fill:#06d6a0; font-size: {self.base_font_size}px;">{str(pa)}%</text>'
+        out += f'<text text-anchor="start" x="{self.width*0.04}" y="{self.height*0.0 + y_c*3}" style="fill:#118ab2; font-size: {self.base_font_size}px;">{str(pw)}%</text>'
+        # out += f'<path d="M50,50 h200 a20,20 0 0 1 20,20 v200 a20,20 0 0 1 -20,20 h-200 a20,20 0 0 1 -20,-20 v-200 a20,20 0 0 1 20,-20 z"  />'
         out += "</g>"
 
         return out
 
+    # Планеты и дома
     def _makePlanetGrid(self):
-        li = 10
-        offset = 50
+        li = self.height*0.04
+        offset = -self.width*0.085
 
-        out = '<g transform="translate(570,-20)">'
-        out += '<g transform="translate(140, -15)">'
-        out += f'<text text-anchor="end" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 14px;">{self.language_settings["planets_and_house"]} {self.name}:</text>'
+        out = f'<g transform="translate({self.width*0.77}, {self.height*0.06})">'
+        out += f'<g transform="translate(0, 0)">'
+        out += f'<text x="{self.height*0.27}" text-anchor="end" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: {3*self.header_font_size}px;">{self.language_settings["planets_and_house"]}</text>'
         out += "</g>"
 
         end_of_line = None
         for i in range(len(self.available_planets_setting)):
-            offset_between_lines = 14
+            offset_between_lines = self.height*0.025
             end_of_line = "</g>"
 
             # Guarda qui !!
@@ -1325,23 +1372,23 @@ class KerykeionChartSVG:
                 offset = -120
 
             # start of line
-            out += f'<g transform="translate({offset},{li})">'
+            out += f'<g transform="translate({offset},{li+self.height*0.02})">'
 
             # planet text
-            out += f'<text text-anchor="end" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 10px;">{self.language_settings["celestial_points"][self.available_planets_setting[i]["label"]]}</text>'
+            out += f'<text text-anchor="end" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: {self.base_font_size}px;">{self.language_settings["celestial_points"][self.available_planets_setting[i]["label"]]}</text>'
 
             # planet symbol
-            out += f'<g transform="translate(5,-8)"><use transform="scale(0.4)" xlink:href="#{self.available_planets_setting[i]["name"]}" /></g>'
+            out += f'<g transform="translate({self.width*0.008}, -{self.height*0.015})"><use transform="scale(0.8)" xlink:href="#{self.available_planets_setting[i]["name"]}" /></g>'
 
             # planet degree
-            out += f'<text text-anchor="start" x="19" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 10px;">{self._dec2deg(self.points_deg[i])}</text>'
+            out += f'<text text-anchor="start" x="{self.width*0.025}" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: {self.base_font_size}px;">{self._dec2deg(self.points_deg[i])}</text>'
 
             # zodiac
-            out += f'<g transform="translate(60,-8)"><use transform="scale(0.3)" xlink:href="#{self.zodiac[self.points_sign[i]]["name"]}" /></g>'
+            out += f'<g transform="translate({self.width*0.075},-{self.height*0.02})"><use transform="scale(0.8)" xlink:href="#{self.zodiac[self.points_sign[i]]["name"]}" /></g>'
 
             # planet retrograde
             if self.points_retrograde[i]:
-                out += '<g transform="translate(74,-6)"><use transform="scale(.5)" xlink:href="#retrograde" /></g>'
+                out += '<g transform="translate(74,-6)"><use transform="scale(.1)" xlink:href="#retrograde" /></g>'
 
             # end of line
             out += end_of_line
@@ -1351,10 +1398,10 @@ class KerykeionChartSVG:
         if self.chart_type == "Transit" or self.chart_type == "Synastry":
             if self.chart_type == "Transit":
                 out += '<g transform="translate(320, -15)">'
-                out += f'<text text-anchor="end" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 14px;">{self.t_name}:</text>'
+                out += f'<text text-anchor="end" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: 14px;">{self.t_name}:</text>'
             else:
                 out += '<g transform="translate(380, -15)">'
-                out += f'<text text-anchor="end" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 14px;">{self.language_settings["planets_and_house"]} {self.t_user.name}:</text>'
+                out += f'<text text-anchor="end" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: 14px;">{self.language_settings["planets_and_house"]} {self.t_user.name}:</text>'
 
             out += end_of_line
 
@@ -1371,11 +1418,11 @@ class KerykeionChartSVG:
                     out += f'<g transform="translate({t_offset},{t_li})">'
 
                     # planet text
-                    out += f'<text text-anchor="end" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 10px;">{self.language_settings["celestial_points"][self.available_planets_setting[i]["label"]]}</text>'
+                    out += f'<text text-anchor="end" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: 10px;">{self.language_settings["celestial_points"][self.available_planets_setting[i]["label"]]}</text>'
                     # planet symbol
                     out += f'<g transform="translate(5,-8)"><use transform="scale(0.4)" xlink:href="#{self.available_planets_setting[i]["name"]}" /></g>'
                     # planet degree
-                    out += f'<text text-anchor="start" x="19" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 10px;">{self._dec2deg(self.t_points_deg[i])}</text>'
+                    out += f'<text text-anchor="start" x="19" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: 10px;">{self._dec2deg(self.t_points_deg[i])}</text>'
                     # zodiac
                     out += f'<g transform="translate(60,-8)"><use transform="scale(0.3)" xlink:href="#{self.zodiac[self.t_points_sign[i]]["name"]}" /></g>'
 
@@ -1394,21 +1441,23 @@ class KerykeionChartSVG:
         out += end_of_line
         return out
 
+    # Дома
     def _makeHousesGrid(self):
-        out = '<g transform="translate(750,-20)">'
-
-        li = 10
+        out = f'<g transform="translate({self.width*0.92},{self.height*0.06})">'
+        offset_between_lines = self.height*0.025
+        li = self.height*0.04
+        offset = -self.width*0.068
         for i in range(12):
             if i < 9:
                 cusp = "&#160;&#160;" + str(i + 1)
             else:
                 cusp = str(i + 1)
-            out += f'<g transform="translate(0,{li})">'
-            out += f'<text text-anchor="end" x="40" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 10px;">{self.language_settings["cusp"]} {cusp}:</text>'
-            out += f'<g transform="translate(40,-8)"><use transform="scale(0.3)" xlink:href="#{self.zodiac[self.houses_sign_graph[i]]["name"]}" /></g>'
-            out += f'<text x="53" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 10px;"> {self._dec2deg(self.user.houses_list[i]["position"])}</text>'
+            out += f'<g transform="translate({offset},{li+self.height*0.02})">'
+            out += f'<text text-anchor="end" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: {self.base_font_size}px;">{self.language_settings["cusp"]} {cusp}:</text>'
+            out += f'<g transform="translate({self.width*0.007}, -{self.height*0.02})"><use transform="scale(0.8)" xlink:href="#{self.zodiac[self.houses_sign_graph[i]]["name"]}" /></g>'
+            out += f'<text x="{self.width*0.03}" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: {self.base_font_size}px;"> {self._dec2deg(self.user.houses_list[i]["position"])}</text>'
             out += "</g>"
-            li = li + 14
+            li = li + offset_between_lines
 
         out += "</g>"
 
@@ -1421,9 +1470,9 @@ class KerykeionChartSVG:
                 else:
                     cusp = str(i + 1)
                 out += '<g transform="translate(0,' + str(li) + ')">'
-                out += f'<text text-anchor="end" x="40" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 10px;">{self.language_settings["cusp"]} {cusp}:</text>'
+                out += f'<text text-anchor="end" x="40" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: 10px;">{self.language_settings["cusp"]} {cusp}:</text>'
                 out += f'<g transform="translate(40,-8)"><use transform="scale(0.3)" xlink:href="#{self.zodiac[self.t_houses_sign_graph[i]]["name"]}" /></g>'
-                out += f'<text x="53" style="fill:{self.chart_colors_settings["paper_0"]}; font-size: 10px;"> {self._dec2deg(self.t_user.houses_list[i]["position"])}</text>'
+                out += f'<text x="53" style="fill:{self.chart_colors_settings["base_color_font"]}; font-size: 10px;"> {self._dec2deg(self.t_user.houses_list[i]["position"])}</text>'
                 out += "</g>"
                 li = li + 14
             out += "</g>"
@@ -1451,24 +1500,31 @@ class KerykeionChartSVG:
         rotate = "0"
         translate = "0"
 
+        self.height = int(self.chart_settings["height"])
+        self.width = int(self.chart_settings["width"])
+        self.header_font_size = self.width*0.016
+        self.base_font_size = self.width*0.01
+
         # To increase the size of the chart, change the viewbox
         if self.chart_type == "Natal" or self.chart_type == "ExternalNatal":
-            viewbox = self.chart_settings["basic_chart_viewBox"]
+            viewbox = f"0 0 {self.width} {self.height} "
         else:
-            viewbox = self.chart_settings["wide_chart_viewBox"]
+            viewbox =f"0 0 {self.width} {self.height} "
 
         # template dictionary
         td: ChartTemplateDictionary = dict()  # type: ignore
-        r = 240
+        r = self.height * 0.3
 
         if self.chart_type == "ExternalNatal":
-            self.c1 = 56
-            self.c2 = 92
-            self.c3 = 112
+            self.c0 = 1
+            self.c1 = 0.9
+            self.c2 =  0.6
+            self.c3 =  0.52
         else:
-            self.c1 = 0
-            self.c2 = 36
-            self.c3 = 120
+            self.c0 = 1.2
+            self.c1 = 0.85
+            self.c2 =  0.52
+            self.c3 =  0
 
         # transit
         if self.chart_type == "Transit" or self.chart_type == "Synastry":
@@ -1482,48 +1538,57 @@ class KerykeionChartSVG:
             )
             td["c2"] = 'cx="' + str(r) + '" cy="' + str(r) + '" r="' + str(r - 72) + '"'
             td["c2style"] = (
-                f"fill: {self.chart_colors_settings['paper_1']}; fill-opacity:.4; stroke: {self.chart_colors_settings['zodiac_transit_ring_1']}; stroke-opacity:.4; stroke-width: 1px"
+                f"fill: {self.chart_colors_settings['bg_color']}; fill-opacity:1; stroke: {self.chart_colors_settings['zodiac_transit_ring_1']}; stroke-opacity:.4; stroke-width: 1px"
             )
-
             td["c3"] = (
                 'cx="' + str(r) + '" cy="' + str(r) + '" r="' + str(r - 160) + '"'
             )
             td["c3style"] = (
-                f"fill: {self.chart_colors_settings['paper_1']}; fill-opacity:.8; stroke: {self.chart_colors_settings['zodiac_transit_ring_0']}; stroke-width: 1px"
+                f"fill: {self.chart_colors_settings['base_color_font']}; fill-opacity:.8; stroke: {self.chart_colors_settings['zodiac_transit_ring_0']}; stroke-width: 1px"
             )
 
             td["makeAspects"] = self._makeAspectsTransit(r, (r - 160))
             td["makeAspectGrid"] = self._makeAspectTransitGrid(r)
             td["makePatterns"] = ""
-            td["chart_width"] = self.full_width
+            td["chart_width"] = self.width
+            td["chart_height"] = self.height
         else:
             td["transitRing"] = ""
             td["degreeRing"] = self._degreeRing(r)
 
             # circles
-            td["c1"] = f'cx="{r}" cy="{r}" r="{r - self.c1}"'
+            td["c0"] = f'cx="{r}" cy="{r}" r="{r*self.c0}"'
+            td["c0style"] = (
+                f'fill: {self.chart_colors_settings["base_color_font"]}; fill-opacity:.2;'
+            )
+            td["c1"] = f'cx="{r}" cy="{r}" r="{r*self.c1}"'
             td["c1style"] = (
-                f'fill: none; stroke: {self.chart_colors_settings["zodiac_radix_ring_2"]}; stroke-width: 1px; '
+                f'fill: none;'
             )
-            td["c2"] = f'cx="{r}" cy="{r}" r="{r - self.c2}"'
+            td["c2"] = f'cx="{r}" cy="{r}" r="{r*self.c2}"'
             td["c2style"] = (
-                f'fill: {self.chart_colors_settings["paper_1"]}; fill-opacity:.2; stroke: {self.chart_colors_settings["zodiac_radix_ring_1"]}; stroke-opacity:.4; stroke-width: 1px'
+                f'fill: {self.chart_colors_settings["bg_color"]}; fill-opacity:1; stroke: {self.chart_colors_settings["bg_color"]}; stroke-width: 2px'
             )
-            td["c3"] = f'cx="{r}" cy="{r}" r="{r - self.c3}"'
+            td["c3"] = f'cx="{r}" cy="{r}" r="{r*self.c3}"'
             td["c3style"] = (
-                f'fill: {self.chart_colors_settings["paper_1"]}; fill-opacity:.8; stroke: {self.chart_colors_settings["zodiac_radix_ring_0"]}; stroke-width: 1px'
+                f'fill: none; stroke: {self.chart_colors_settings["base_color_font"]}; stroke-opacity: .2; stroke-width: 2px'
             )
-            td["makeAspects"] = self._makeAspects(r, (r - self.c3))
+
+            td["makeAspects"] = self._makeAspects(r, r*self.c3)
             td["makeAspectGrid"] = self._makeAspectGrid(r)
             td["makePatterns"] = self._makePatterns()
-            td["chart_width"] = self.natal_width
+            td["chart_width"] = self.width
+            td["chart_height"] = self.height
 
-        td["circleX"] = str(50)
-        td["circleY"] = str(0)
+        td["circleX"] = str(self.width*0.18)
+        td["circleY"] = str(self.height*0.2)
         td["svgWidth"] = str(svgWidth)
         td["svgHeight"] = str(svgHeight)
         td["viewbox"] = viewbox
-
+        td["chart_width"] = str(self.width)
+        td["chart_height"] = str(self.height)
+        td["base_font_size"] = str(self.base_font_size)
+        td["header_font_size"] = str(self.header_font_size)
         if self.chart_type == "Synastry":
             td["stringTitle"] = (
                 f"{self.name} {self.language_settings['and_word']} {self.t_user.name}"
@@ -1644,8 +1709,8 @@ class KerykeionChartSVG:
             td["stringPosition"] = f"{self.language_settings['type']}: {self.charttype}"
 
         # paper_color_X
-        td["paper_color_0"] = self.chart_colors_settings["paper_0"]
-        td["paper_color_1"] = self.chart_colors_settings["paper_1"]
+        td["base_color_font"] = self.chart_colors_settings["base_color_font"]
+        td["bg_color"] = self.chart_colors_settings["bg_color"]
 
         # planets_color_X
         for i in range(len(self.planets_settings)):
@@ -1668,6 +1733,8 @@ class KerykeionChartSVG:
         td["cfgTranslate"] = translate
 
         # functions
+        self.td = td
+        td["makeInfo"] = self._makeInfo()
         td["makeZodiac"] = self._makeZodiac(r)
         td["makeHouses"] = self._makeHouses(r)
         td["makePlanets"] = self._make_planets(r)
@@ -1692,7 +1759,7 @@ class KerykeionChartSVG:
         self._createTemplateDictionary()
         return template.replace('"', "'")
 
-    def makeSVG(self, save = False) -> None:
+    def makeSVG(self, save=False) -> None:
         """Prints out the SVG file in the specifide folder"""
 
         if not (self.template):
@@ -1710,6 +1777,7 @@ class KerykeionChartSVG:
             logging.info(f"SVG Generated Correctly in: {self.chartname}")
         else:
             return self.template
+
 
 if __name__ == "__main__":
     from kerykeion.utilities import setup_logging

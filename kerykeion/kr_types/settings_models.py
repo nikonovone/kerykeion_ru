@@ -20,7 +20,7 @@ class CustomBaseModel(BaseModel):
 
     def __getitem__(self, item):
         return getattr(self, item)
-    
+
     def __str__(self) -> str:
         return str(self.dict())
 
@@ -49,7 +49,8 @@ class KerykeionSettingsChartColorsModel(CustomBaseModel):
     """
 
     paper_0: str = Field(title="Paper Color 0", description="Paper Color 0")
-    paper_1: str = Field(title="Paper Color 1", description="Paper Color 1")
+    base_color_font: str = Field(title="Base Font Color", description="Base Font Color")
+    bg_color: str = Field(title="Background Color", description="Background Color")
     zodiac_bg_0: str = Field(title="Zodiac Background Color 0", description="Zodiac Background Color 0")
     zodiac_bg_1: str = Field(title="Zodiac Background Color 1", description="Zodiac Background Color 1")
     zodiac_bg_2: str = Field(title="Zodiac Background Color 2", description="Zodiac Background Color 2")
@@ -165,8 +166,8 @@ class KerykeionGeneralSettingsModel(CustomBaseModel):
     language: str = Field(title="Language", description="The language of the chart")
 
 class KerykeionChartSettingsModel(CustomBaseModel):
-    basic_chart_viewBox: str = Field(title="Basic Chart ViewBox", description="The viewbox of the basic chart")
-    wide_chart_viewBox: str = Field(title="Wide Chart ViewBox", description="The viewbox of the wide chart")
+    height: str = Field(title="Height")
+    width: str = Field(title="Width")
 
 # Settings Model
 class KerykeionSettingsModel(CustomBaseModel):

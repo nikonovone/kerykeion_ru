@@ -43,7 +43,7 @@
     },
     "RU": {
       "info": "Информация",
-      "cusp": "Фаза перехода",
+      "cusp": "Дом",
       "longitude": "Долгота",
       "latitude": "Широта",
       "north": "Север",
@@ -256,7 +256,7 @@
       "is_major": 1,
       "is_minor": 0,
       "orb": 10,
-      "color": "#5757e2"
+      "color": "#9e0142"
     },
     {
       "degree": 30,
@@ -266,7 +266,7 @@
       "is_major": 0,
       "is_minor": 1,
       "orb": 1,
-      "color": "#810757"
+      "color": "#ffffbf"
     },
     {
       "degree": 45,
@@ -276,7 +276,7 @@
       "is_major": 0,
       "is_minor": 1,
       "orb": 1,
-      "color": "#b14e58"
+      "color": "#f46d43"
     },
     {
       "degree": 60,
@@ -286,7 +286,7 @@
       "is_major": 1,
       "is_minor": 0,
       "orb": 6,
-      "color": "#d59e28"
+      "color": "#fdae61"
     },
     {
       "degree": 72,
@@ -296,7 +296,7 @@
       "is_major": 0,
       "is_minor": 1,
       "orb": 1,
-      "color": "#1f99b3"
+      "color": "#fee08b"
     },
     {
       "degree": 90,
@@ -306,7 +306,7 @@
       "is_major": 1,
       "is_minor": 0,
       "orb": 5,
-      "color": "#dc0000"
+      "color": "#e6f598"
     },
     {
       "degree": 120,
@@ -316,7 +316,7 @@
       "is_major": 1,
       "is_minor": 0,
       "orb": 8,
-      "color": "#36d100"
+      "color": "#d53e4f"
     },
     {
       "degree": 135,
@@ -326,7 +326,7 @@
       "is_major": 0,
       "is_minor": 1,
       "orb": 1,
-      "color": "#985a10"
+      "color": "#abdda4"
     },
     {
       "degree": 144,
@@ -336,7 +336,7 @@
       "is_major": 0,
       "is_minor": 1,
       "orb": 1,
-      "color": "#7a9810"
+      "color": "#66c2a5"
     },
     {
       "degree": 150,
@@ -346,7 +346,7 @@
       "is_major": 0,
       "is_minor": 0,
       "orb": 1,
-      "color": "#26bbcf"
+      "color": "#3288bd"
     },
     {
       "degree": 180,
@@ -356,14 +356,14 @@
       "is_major": 1,
       "is_minor": 0,
       "orb": 10,
-      "color": "#510060"
+      "color": "#5e4fa2"
     }
   ],
   "celestial_points": [
     {
       "id": 0,
       "name": "Sun",
-      "color": "#984b00",
+      "color": "#D9EDBF",
       "is_active": true,
       "element_points": 40,
       "related_zodiac_signs": [
@@ -374,7 +374,7 @@
     {
       "id": 1,
       "name": "Moon",
-      "color": "#150052",
+      "color": "#FF9800",
       "is_active": true,
       "element_points": 40,
       "related_zodiac_signs": [
@@ -385,7 +385,7 @@
     {
       "id": 2,
       "name": "Mercury",
-      "color": "#520800",
+      "color": "#2C7865",
       "is_active": true,
       "element_points": 15,
       "related_zodiac_signs": [
@@ -397,7 +397,7 @@
     {
       "id": 3,
       "name": "Venus",
-      "color": "#400052",
+      "color": "#90D26D",
       "is_active": true,
       "element_points": 15,
       "related_zodiac_signs": [
@@ -409,7 +409,7 @@
     {
       "id": 4,
       "name": "Mars",
-      "color": "#540000",
+      "color": "#D9EDBF",
       "is_active": true,
       "element_points": 15,
       "related_zodiac_signs": [
@@ -420,7 +420,7 @@
     {
       "id": 5,
       "name": "Jupiter",
-      "color": "#47133d",
+      "color": "#FF9800",
       "is_active": true,
       "element_points": 10,
       "related_zodiac_signs": [
@@ -431,7 +431,7 @@
     {
       "id": 6,
       "name": "Saturn",
-      "color": "#124500",
+      "color": "#2C7865",
       "is_active": true,
       "element_points": 10,
       "related_zodiac_signs": [
@@ -442,7 +442,7 @@
     {
       "id": 7,
       "name": "Uranus",
-      "color": "#6f0766",
+      "color": "#90D26D",
       "is_active": true,
       "element_points": 10,
       "related_zodiac_signs": [
@@ -453,7 +453,7 @@
     {
       "id": 8,
       "name": "Neptune",
-      "color": "#06537f",
+      "color": "#D9EDBF",
       "is_active": true,
       "element_points": 10,
       "related_zodiac_signs": [
@@ -464,7 +464,7 @@
     {
       "id": 9,
       "name": "Pluto",
-      "color": "#713f04",
+      "color": "#FF9800",
       "is_active": true,
       "element_points": 10,
       "related_zodiac_signs": [
@@ -475,7 +475,7 @@
     {
       "id": 10,
       "name": "Mean_Node",
-      "color": "#4c1541",
+      "color": "#2C7865",
       "is_active": false,
       "element_points": 0,
       "related_zodiac_signs": [],
@@ -484,7 +484,7 @@
     {
       "id": 11,
       "name": "True_Node",
-      "color": "#4c1541",
+      "color": "#90D26D",
       "is_active": true,
       "element_points": 20,
       "related_zodiac_signs": [],
@@ -493,7 +493,7 @@
     {
       "id": 12,
       "name": "Chiron",
-      "color": "#666f06",
+      "color": "#D9EDBF",
       "is_active": true,
       "element_points": 0,
       "related_zodiac_signs": [],
@@ -502,7 +502,7 @@
     {
       "id": 13,
       "name": "First_House",
-      "color": "#ff7e00",
+      "color": "#FF9800",
       "is_active": true,
       "element_points": 40,
       "related_zodiac_signs": [],
@@ -511,7 +511,7 @@
     {
       "id": 14,
       "name": "Tenth_House",
-      "color": "#FF0000",
+      "color": "#2C7865",
       "is_active": true,
       "element_points": 20,
       "related_zodiac_signs": [],
@@ -520,7 +520,7 @@
     {
       "id": 15,
       "name": "Seventh_House",
-      "color": "#0000FF",
+      "color": "#90D26D",
       "is_active": false,
       "element_points": 0,
       "related_zodiac_signs": [],
@@ -529,40 +529,42 @@
     {
       "id": 16,
       "name": "Fourth_House",
-      "color": "#000000",
+      "color": "#90D26D",
       "is_active": false,
       "element_points": 0,
       "related_zodiac_signs": [],
       "label": "Ic"
     }
   ],
+
   "chart_colors": {
     "paper_0": "#000000",
-    "paper_1": "#ffffff",
-    "zodiac_bg_0": "#ff7200",
-    "zodiac_bg_1": "#6b3d00",
-    "zodiac_bg_2": "#69acf1",
-    "zodiac_bg_3": "#2b4972",
-    "zodiac_bg_4": "#ff7200",
-    "zodiac_bg_5": "#6b3d00",
-    "zodiac_bg_6": "#69acf1",
-    "zodiac_bg_7": "#2b4972",
-    "zodiac_bg_8": "#ff7200",
-    "zodiac_bg_9": "#6b3d00",
-    "zodiac_bg_10": "#69acf1",
-    "zodiac_bg_11": "#2b4972",
-    "zodiac_icon_0": "#ff7200",
-    "zodiac_icon_1": "#6b3d00",
-    "zodiac_icon_2": "#69acf1",
-    "zodiac_icon_3": "#2b4972",
-    "zodiac_icon_4": "#ff7200",
-    "zodiac_icon_5": "#6b3d00",
-    "zodiac_icon_6": "#69acf1",
-    "zodiac_icon_7": "#2b4972",
-    "zodiac_icon_8": "#ff7200",
-    "zodiac_icon_9": "#6b3d00",
-    "zodiac_icon_10": "#69acf1",
-    "zodiac_icon_11": "#2b4972",
+    "base_color_font": "#f1dac4",
+    "bg_color": "#00171f",
+    "zodiac_bg_0": "#177e89",
+    "zodiac_bg_1": "#084c61",
+    "zodiac_bg_2": "#db3a34",
+    "zodiac_bg_3": "#ffc857",
+    "zodiac_bg_4": "#177e89",
+    "zodiac_bg_5": "#084c61",
+    "zodiac_bg_6": "#db3a34",
+    "zodiac_bg_7": "#ffc857",
+    "zodiac_bg_8": "#177e89",
+    "zodiac_bg_9": "#084c61",
+    "zodiac_bg_10": "#db3a34",
+    "zodiac_bg_11": "#ffc857",
+    "zodiac_icon_0": "#177e89",
+    "zodiac_icon_1": "#084c61",
+    "zodiac_icon_2": "#db3a34",
+    "zodiac_icon_3": "#ffc857",
+    "zodiac_icon_4": "#177e89",
+    "zodiac_icon_5": "#084c61",
+    "zodiac_icon_6": "#db3a34",
+    "zodiac_icon_7": "#ffc857",
+    "zodiac_icon_8": "#177e89",
+    "zodiac_icon_9": "#084c61",
+    "zodiac_icon_10": "#db3a34",
+    "zodiac_icon_11": "#ffc857",
     "zodiac_radix_ring_0": "#ff0000",
     "zodiac_radix_ring_1": "#ff0000",
     "zodiac_radix_ring_2": "#ff0000",
@@ -572,8 +574,8 @@
     "zodiac_transit_ring_3": "#0000ff",
     "houses_radix_line": "#ff0000",
     "houses_transit_line": "#0000ff",
-    "lunar_phase_0": "#000000",
-    "lunar_phase_1": "#FFFFFF",
+    "lunar_phase_0": "#00171f",
+    "lunar_phase_1": "#ffc857",
     "lunar_phase_2": "#CCCCCC"
   },
   "general_settings": {
@@ -582,7 +584,7 @@
     "language": "RU"
   },
   "chart_settings": {
-    "basic_chart_viewBox": "0 0 1920 1080",
-    "wide_chart_viewBox": "0 0 1920 1080"
+    "height": "1080",
+    "width": "1920"
   }
 }
